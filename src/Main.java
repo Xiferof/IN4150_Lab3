@@ -2,6 +2,7 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.RemoteObjectInvocationHandler;
+import java.util.InputMismatchException;
 
 /**
  * Created by Anirudh on 18/12/16.
@@ -15,20 +16,14 @@ public class Main {
             System.out.println("Improper Arguments Please specify number of Process and Number of iterations");
             return;
         }
-
-        //Create RMI registry
-        try
-        {
-            LocateRegistry.createRegistry(1099);
-            System.out.println("Created Registry");
-        }
-        catch(RemoteException e)
-        {
-            System.out.println("Already Running Binding");
-        }
+        String bindingLocation;
+        int thisProcID= Integer.parseInt(args[0]);
+//        boolean ifServer= Boolean.parseBoolean(args[1]);
+        String rmiHostLocation = args[2];
+        bindingLocation="rmi://"+rmiHostLocation+":1099/";
         AGEProc p= new AGEProc();
         try {
-            Naming.rebind("rmi://localhost:1099/", p);
+            Naming.rebind(bindingLocation, p);
         }
         catch(Exception ex) {
             ex.printStackTrace();
