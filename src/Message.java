@@ -4,34 +4,33 @@ import java.util.Comparator;
 /**
  * Created by vincent on 11/27/16.
  */
-enum messageType {REQUEST, GRANT, POSTPONE, INQUIRE, RELEASE, RELINQUISH}
 public class Message implements Serializable, Comparable<Message>
 {
     private Timestamp timestamp;
-    private messageType type;
+    private int senderID;
 
-    public Message(int time, int senderID, messageType type)
+    public Message(int level, int senderID)
     {
-        this.timestamp = new Timestamp(time, senderID);
-        this.type = type;
+        this.timestamp = new Timestamp(level, senderID);
+        this.senderID = senderID;
     }
 
-    public Message(Timestamp timestamp, messageType type)
+    public Message(Timestamp timestamp, int senderID)
     {
         this.timestamp = timestamp;
-        this.type = type;
+        this.senderID = senderID;
     }
 
     public String toString()
     {
-        return "Message timestamp: " + timestamp + ", Message Type: " + type;
+        return "Message timestamp: " + timestamp + ", senderId: " + senderID;
     }
 
     public boolean equals(Object obj)
     {
         if(!(obj instanceof Message))
             return false;
-        return ((this.timestamp.equals(((Message)(obj)).timestamp)) && (this.type == ((Message)(obj)).type));
+        return (this.timestamp.equals(((Message)(obj)).timestamp) && (this.senderID == ((Message)(obj)).senderID));
     }
 
     public int compareTo(Message that)
@@ -39,7 +38,7 @@ public class Message implements Serializable, Comparable<Message>
         return this.timestamp.compareTo(that.timestamp);
     }
 
-    public messageType getType() {return type;}
-
     public Timestamp getTimestamp() {return timestamp;}
+
+    public int getSenderID() {return senderID;}
 }

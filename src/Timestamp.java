@@ -44,7 +44,7 @@ public class Timestamp implements Serializable, Comparable<Timestamp>
         }
         else
         {
-            return this.level -that.level;
+            return this.level - that.level;
         }
     }
 
