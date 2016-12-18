@@ -1,3 +1,4 @@
+import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
@@ -5,5 +6,11 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class AGEProc extends UnicastRemoteObject implements AGEInterface {
 
-    public void recieveMessage(Message message){}
+
+
+    public AGEProc()throws RemoteException {}
+
+
+    public void recieveMessage(Message message)
+    {}
 }
