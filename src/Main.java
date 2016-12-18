@@ -1,3 +1,4 @@
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
@@ -24,6 +25,8 @@ public class Main {
         {
             System.out.println("Already Running Binding");
         }
+        AGEProc p= new AGEProc();
+        Naming.rebind("rmi://localhost:1099/",p);
 
 
 
