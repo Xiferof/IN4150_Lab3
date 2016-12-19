@@ -11,21 +11,44 @@ public class Main {
 
     public static void main(String args[]) throws RemoteException
     {
-        if(args.length<=2)
+        if(args.length==0)
         {
-            System.out.println("Improper Arguments Please specify number of Process and Number of iterations");
+            System.out.println("Improper Arguments Please specify rmi host IP");
             return;
         }
         String bindingLocation;
-        int thisProcID= Integer.parseInt(args[0]);
+      //  int thisProcID= Integer.parseInt(args[0]);
 //        boolean ifServer= Boolean.parseBoolean(args[1]);
-        String rmiHostLocation = args[2];
+
+        String rmiHostLocation = args[0];
+
         bindingLocation="rmi://"+rmiHostLocation+":1099/";
-        AGEProc p= new AGEProc();
-        try {
-            Naming.rebind(bindingLocation, p);
+
+        int thisProcID = -1;
+
+        try
+        {
+            AGEInfoInterface infoStub = (AGEInfoInterface) Naming.lookup(bindingLocation+"info");
+            thisProcID = infoStub.requestProcId();
         }
-        catch(Exception ex) {
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        if(thisProcID == -1)
+        {
+            System.out.println("Could Not Get Proc Id");
+            return;
+        }
+        System.out.println("Binding with Proc ID = "+thisProcID);
+        AGEProc p= new AGEProc(thisProcID);
+        try
+        {
+            Naming.rebind(bindingLocation+thisProcID, p);
+        }
+        catch(Exception ex)
+        {
             ex.printStackTrace();
         }
     }

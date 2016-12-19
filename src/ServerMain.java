@@ -1,3 +1,4 @@
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
@@ -9,7 +10,7 @@ public class ServerMain
 
     public static void main(String args[]) throws RemoteException
     {
-        AGEInfo infoObject= new AGEInfo();
+
             //Create RMI registry only if Server
             try
             {
@@ -19,7 +20,19 @@ public class ServerMain
             {
                 System.out.println("Already Running Binding");
             }
+        AGEInfo infoObject= new AGEInfo();
 
+        //Bind your information object on the Server
+        try
+        {
+            Naming.rebind("rmi://localhost:1099/info",infoObject);
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        System.out.println("Info Object binded to Server");
 
     }
 }

@@ -3,7 +3,7 @@ import java.rmi.server.UnicastRemoteObject;
 /**
  * Created by Anirudh on 18/12/16.
  */
-public class AGEProc extends UnicastRemoteObject implements AGEInterface
+public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
 {
 
     private boolean[] traversal;
@@ -18,6 +18,11 @@ public class AGEProc extends UnicastRemoteObject implements AGEInterface
 
     public AGEProc()throws RemoteException
     {}
+    public AGEProc(int procID)throws RemoteException
+    {
+        this.id = procID;
+
+    }
 
     public AGEProc(int id, int numProcs)throws RemoteException
     {
