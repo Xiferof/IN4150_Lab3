@@ -17,4 +17,13 @@ public class AGEInfo extends UnicastRemoteObject implements AGEInfoInterface
     {
         return numberOfProcces++;
     }
+
+    public boolean canStart()
+    {
+        return true;
+    }
+    public int getNumberOfProcs()
+    {
+        return numberOfProcces;
+    }
 }

@@ -51,6 +51,21 @@ public class Main {
         {
             ex.printStackTrace();
         }
+        try
+        {
+            AGEInfoInterface infoStub = (AGEInfoInterface) Naming.lookup(bindingLocation+"info");
+            while(infoStub.canStart())
+            {
+            //Wait Until we can all start
+            }
+            int numberOfProcs= infoStub.getNumberOfProcs();
+            p.run( numberOfProcs);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
     }
 
 
