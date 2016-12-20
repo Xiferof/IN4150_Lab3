@@ -42,7 +42,7 @@ public class Main {
             return;
         }
         System.out.println("Binding with Proc ID = "+thisProcID);
-        AGEProc p= new AGEProc(thisProcID);
+        AGEProc p= new AGEProc(thisProcID, bindingLocation);
         try
         {
             Naming.rebind(bindingLocation+thisProcID, p);
