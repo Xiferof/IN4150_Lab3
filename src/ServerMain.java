@@ -10,22 +10,28 @@ public class ServerMain
 
     public static void main(String args[]) throws RemoteException
     {
+        if(args.length==0)
+        {
+            System.out.println("Improper Arguments Please specify minimum number of expected processes.");
+            return;
+        }
+        int minExpectedNumProcs= Integer.parseInt(args[0]);
 
-            //Create RMI registry only if Server
-            try
-            {
-                LocateRegistry.createRegistry(1099);
-                System.out.println("Created Registry");
-            } catch (RemoteException e)
-            {
-                System.out.println("Already Running Binding");
-            }
-        AGEInfo infoObject= new AGEInfo();
+        //Create RMI registry only if Server
+        try
+        {
+            LocateRegistry.createRegistry(1099);
+            System.out.println("Created Registry");
+        } catch (RemoteException e)
+        {
+            System.out.println("Already Running Binding");
+        }
+        AGEInfo infoObject= new AGEInfo(minExpectedNumProcs);
 
         //Bind your information object on the Server
         try
         {
-            Naming.rebind("rmi://localhost:1099/info",infoObject);
+            Naming.rebind("rmi://localhost:1099/info", infoObject);
         }
         catch(Exception ex)
         {

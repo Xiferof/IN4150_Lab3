@@ -6,24 +6,26 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class AGEInfo extends UnicastRemoteObject implements AGEInfoInterface
 {
-    private int numberOfProcces;
+    private int minExpectedNumProcs;
+    private int numProcs;
 
-    public AGEInfo()throws RemoteException
+    public AGEInfo(int minExpectedNumProcs)throws RemoteException
     {
-        numberOfProcces = 0;
+        this.numProcs = 0;
+        this.minExpectedNumProcs = minExpectedNumProcs;
     }
 
     public int requestProcId()
     {
-        return numberOfProcces++;
+        return numProcs++;
     }
 
     public boolean canStart()
     {
-        return true;
+        return (numProcs >= minExpectedNumProcs);
     }
     public int getNumberOfProcs()
     {
-        return numberOfProcces;
+        return numProcs;
     }
 }
