@@ -102,7 +102,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
 
 
         waitTime(10000);
-        System.out.println("Results Proc" + procId + ": level: " + level + ", CaptureMessages: " + captureMessages + ", ackMessages: " + ackMessages);
+        System.out.println("Results Proc" + procId.getId() + ": level: " + level + ", CaptureMessages: " + captureMessages + ", ackMessages: " + ackMessages);
     }
 
     // waits amount of time
@@ -181,7 +181,8 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         // get RMI lookup and send message
         try
         {
-            ProcId pId = ((AGEInfoInterface)(Naming.lookup(infoBinding))).getBindingOf(id);
+            AGEInfoInterface info = ((AGEInfoInterface)(Naming.lookup(infoBinding)));
+            ProcId pId = info.getBindingOf(id);
             AGEProcInterface Rcv = (AGEProcInterface) Naming.lookup(pId.getBinding() + pId.getId());
             Rcv.receiveMessage(message);
         } catch (Exception e)

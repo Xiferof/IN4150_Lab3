@@ -19,9 +19,9 @@ public class AGEInfo extends UnicastRemoteObject implements AGEInfoInterface
 
     public synchronized ProcId requestProcId(String binding)
     {
-        ProcId pIc = new ProcId(numProcs++, binding);
-
-        return pIc;
+        ProcId pId = new ProcId(numProcs++, binding);
+        procBindings[pId.getId()] = pId;
+        return pId;
     }
 
     public boolean canStart()

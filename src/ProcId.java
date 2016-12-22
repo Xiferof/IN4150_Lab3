@@ -1,7 +1,9 @@
+import java.io.Serializable;
+
 /**
  * Created by vincent on 12/22/16.
  */
-public class ProcId
+public class ProcId implements Serializable
 {
     private int id;
     private String binding;

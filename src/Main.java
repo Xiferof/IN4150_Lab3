@@ -39,7 +39,7 @@ public class Main {
         String infoBindingIP = args[1];
 
         bindingLocation = "rmi://" + rmiHostLocation + ":1099/";
-        infoBindingLoc = "rmi://" + infoBindingIP + ":1099/";
+        infoBindingLoc = "rmi://" + infoBindingIP + ":1099/info";
 
         ProcId thisProcID = null;
 
@@ -51,7 +51,7 @@ public class Main {
 //            thisProcID = infoStub.requestProcId();
 //            System.out.println("Got proc id for " + thisProcID);
 //            System.out.println(thisProcID + "TESTING");
-            thisProcID = ((AGEInfoInterface)(Naming.lookup(bindingLocation+"info"))).requestProcId(bindingLocation);
+            thisProcID = ((AGEInfoInterface)(Naming.lookup(infoBindingLoc))).requestProcId(bindingLocation);
             System.out.println("Got proc id for " + thisProcID);
         }
         catch (Exception ex)
@@ -68,7 +68,7 @@ public class Main {
         AGEProc p= new AGEProc(thisProcID, infoBindingLoc);
         try
         {
-            Naming.rebind(bindingLocation+thisProcID, p);
+            Naming.rebind(bindingLocation+thisProcID.getId(), p);
         }
         catch(Exception ex)
         {
