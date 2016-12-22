@@ -7,15 +7,15 @@ import java.util.Comparator;
 public class Message implements Serializable, Comparable<Message>
 {
     private Timestamp timestamp;
-    private int senderID;
+    private ProcId senderID;
 
-    public Message(int level, int senderID)
+    public Message(int level, ProcId senderID)
     {
         this.timestamp = new Timestamp(level, senderID);
         this.senderID = senderID;
     }
 
-    public Message(Timestamp timestamp, int senderID)
+    public Message(Timestamp timestamp, ProcId senderID)
     {
         this.timestamp = timestamp;
         this.senderID = senderID;
@@ -40,5 +40,5 @@ public class Message implements Serializable, Comparable<Message>
 
     public Timestamp getTimestamp() {return timestamp;}
 
-    public int getSenderID() {return senderID;}
+    public ProcId getSenderID() {return senderID;}
 }

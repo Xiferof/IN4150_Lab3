@@ -6,9 +6,9 @@ import java.io.Serializable;
 public class Timestamp implements Serializable, Comparable<Timestamp>
 {
     private int level;
-    private int id;
+    private ProcId id;
 
-    public Timestamp(int level, int id)
+    public Timestamp(int level, ProcId id)
     {
         this.level = level;
         this.id = id;
@@ -22,7 +22,7 @@ public class Timestamp implements Serializable, Comparable<Timestamp>
 
     public int getLevel() {return level;}
 
-    public int getId() {return id;}
+    public ProcId getPId() {return id;}
 
     public String toString()
     {
@@ -40,7 +40,7 @@ public class Timestamp implements Serializable, Comparable<Timestamp>
     {
         if(this.level == that.level)
         {
-            return this.id - that.id;
+            return this.id.getId() - that.id.getId();
         }
         else
         {

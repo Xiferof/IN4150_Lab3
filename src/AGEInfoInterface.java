@@ -6,7 +6,8 @@ import java.rmi.RemoteException;
  */
 public interface AGEInfoInterface extends Remote
 {
-    public int requestProcId()throws RemoteException;
+    public ProcId requestProcId(String binding)throws RemoteException;
     public boolean canStart() throws RemoteException;
     public int getNumberOfProcs() throws RemoteException;
+    public  ProcId getBindingOf(int id) throws RemoteException;
 }

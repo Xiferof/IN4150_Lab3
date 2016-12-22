@@ -12,12 +12,13 @@ public class Main {
 
     public static void main(String args[]) throws RemoteException
     {
-        if(args.length==0)
+        if(args.length < 2)
         {
-            System.out.println("Improper Arguments Please specify rmi host IP");
+            System.out.println("Improper Arguments Please specify rmi host IP and rmi info IP");
             return;
         }
         String bindingLocation;
+        String infoBindingLoc;
 
         try
         {
@@ -35,10 +36,12 @@ public class Main {
 //        boolean ifServer= Boolean.parseBoolean(args[1]);
 
         String rmiHostLocation = args[0];
+        String infoBindingIP = args[1];
 
-        bindingLocation="rmi://"+rmiHostLocation+":1099/";
+        bindingLocation = "rmi://" + rmiHostLocation + ":1099/";
+        infoBindingLoc = "rmi://" + infoBindingIP + ":1099/";
 
-        int thisProcID = -1;
+        ProcId thisProcID = null;
 
         try
         {
@@ -48,7 +51,7 @@ public class Main {
 //            thisProcID = infoStub.requestProcId();
 //            System.out.println("Got proc id for " + thisProcID);
 //            System.out.println(thisProcID + "TESTING");
-            thisProcID = ((AGEInfoInterface)(Naming.lookup(bindingLocation+"info"))).requestProcId();
+            thisProcID = ((AGEInfoInterface)(Naming.lookup(bindingLocation+"info"))).requestProcId(bindingLocation);
             System.out.println("Got proc id for " + thisProcID);
         }
         catch (Exception ex)
@@ -56,13 +59,13 @@ public class Main {
             ex.printStackTrace();
         }
 
-        if(thisProcID == -1)
+        if(thisProcID == null)
         {
             System.out.println("Could Not Get Proc Id");
             return;
         }
         System.out.println("Binding with Proc ID = "+thisProcID);
-        AGEProc p= new AGEProc(thisProcID, bindingLocation);
+        AGEProc p= new AGEProc(thisProcID, infoBindingLoc);
         try
         {
             Naming.rebind(bindingLocation+thisProcID, p);

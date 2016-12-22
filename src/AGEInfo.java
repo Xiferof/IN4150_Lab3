@@ -8,16 +8,20 @@ public class AGEInfo extends UnicastRemoteObject implements AGEInfoInterface
 {
     private int minExpectedNumProcs;
     private int numProcs;
+    private ProcId[] procBindings;
 
     public AGEInfo(int minExpectedNumProcs)throws RemoteException
     {
         this.numProcs = 0;
         this.minExpectedNumProcs = minExpectedNumProcs;
+        procBindings = new ProcId[minExpectedNumProcs];
     }
 
-    public synchronized int requestProcId()
+    public synchronized ProcId requestProcId(String binding)
     {
-        return numProcs++;
+        ProcId pIc = new ProcId(numProcs++, binding);
+
+        return pIc;
     }
 
     public boolean canStart()
@@ -27,5 +31,10 @@ public class AGEInfo extends UnicastRemoteObject implements AGEInfoInterface
     public int getNumberOfProcs()
     {
         return numProcs;
+    }
+
+    public ProcId getBindingOf(int id)
+    {
+        return procBindings[id];
     }
 }

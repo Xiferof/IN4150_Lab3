@@ -10,7 +10,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
     // list of links to be traversed
     private boolean[] traversal;
     // this processes ID
-    private int procId;
+    private ProcId procId;
     // this processes level
     private int level;
     // total number of processes in the network
@@ -23,8 +23,8 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
     private boolean candidate;
     // this processes owner
     private Timestamp owner;
-    // the RMI binding location
-    private String bindingLoc;
+    // String for info binding
+    private String infoBinding;
 
     // for data collection
     private int captureMessages;
@@ -32,7 +32,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
 
     public AGEProc()throws RemoteException
     {
-        this.procId = -1;
+        this.procId = new ProcId(-1, "");
         this.level = 0;
         this.numProcs = -1;
         this.killed = false;
@@ -40,10 +40,10 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         this.candidate = false;
         this.traversal = null;
         this.owner = null;
-        this.bindingLoc = "";
+        this.infoBinding = "";
     }
 
-    public AGEProc(int procID, String bindingLoc)throws RemoteException
+    public AGEProc(ProcId procID, String infoBinding)throws RemoteException
     {
         this.procId = procID;
         this.level = 0;
@@ -53,14 +53,14 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         this.candidate = false;
         this.traversal = null;
         this.owner = null;
-        this.bindingLoc = bindingLoc;
+        this.infoBinding = infoBinding;
 
         // todo
         captureMessages = 0;
         ackMessages = 0;
     }
 
-    public AGEProc(int procId, int numProcs, String bindingLoc)throws RemoteException
+    public AGEProc(ProcId procId, int numProcs)throws RemoteException
     {
         this.procId = procId;
         this.level = 0;
@@ -70,7 +70,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         this.candidate = false;
         this.traversal = initTraversal();
         this.owner = null;
-        this.bindingLoc = bindingLoc;
+        this.infoBinding = "";
     }
 
 
@@ -130,7 +130,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         boolean[] result = new boolean[numProcs];
         for(int i=0; i<numProcs; i++)
         {
-            if(i == procId) // set own link to true;
+            if(i == procId.getId()) // set own link to true;
                 result[i] = true;
             else // set other links to false
                 result[i] = false;
@@ -173,7 +173,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
     // sends message to id
     private void sendTo(Message message, int id)
     {
-        if(this.procId == id)
+        if(this.procId.getId() == id)
         {
             // this should not happen so make sure it is noticeable for debugging
             System.out.println("----------------------------- Proc" + procId + " sending self message -----------------------------");
@@ -181,7 +181,8 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         // get RMI lookup and send message
         try
         {
-            AGEProcInterface Rcv = (AGEProcInterface) Naming.lookup(bindingLoc + id);
+            ProcId pId = ((AGEInfoInterface)(Naming.lookup(infoBinding))).getBindingOf(id);
+            AGEProcInterface Rcv = (AGEProcInterface) Naming.lookup(pId.getBinding() + pId.getId());
             Rcv.receiveMessage(message);
         } catch (Exception e)
         {
@@ -196,11 +197,11 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         if(candidate)
         {
             // Process concedes to this
-            if((message.getTimestamp().getId() == this.procId) && (!this.killed))
+            if((message.getTimestamp().getPId().getId() == this.procId.getId()) && (!this.killed))
             {
                 System.out.println("Proc" + procId + " earns proc" + message.getSenderID() + "'s vote");
                 level++;
-                traversal[message.getSenderID()] = true;
+                traversal[message.getSenderID().getId()] = true;
             }
             // this is less than received message therefore concede to better candidate
             else if(new Timestamp(level, procId).compareTo(message.getTimestamp()) < 0)
@@ -208,24 +209,24 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
                 killed = true;
                 candidate = false;
                 Message concede = new Message(new Timestamp(message.getTimestamp()), procId);
-                System.out.println("Proc" + procId + " Sending concede to " + message.getTimestamp().getId());
+                System.out.println("Proc" + procId + " Sending concede to " + message.getTimestamp().getPId());
                 ackMessages++;
-                sendTo(concede, message.getTimestamp().getId());
+                sendTo(concede, message.getTimestamp().getPId().getId());
             }
         }
         else // not candidate
         {
             // Not poisoning ourselves
-            if(message.getTimestamp().getId() != procId)
+            if(message.getTimestamp().getPId().getId() != procId.getId())
             {
                 // no current owner so this canidate wins
                 if (owner == null)
                 {
                     owner = new Timestamp(message.getTimestamp());
-                    System.out.println("Proc" + procId + " Sending capture confirm to " + owner.getId());
+                    System.out.println("Proc" + procId + " Sending capture confirm to " + owner.getPId());
                     ackMessages++;
                     Message capture = new Message(new Timestamp(owner), this.procId);
-                    sendTo(capture, owner.getId());
+                    sendTo(capture, owner.getPId().getId());
                 }
                 else // have owner therefore compare to see who is better
                 {
@@ -234,16 +235,16 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
                     {
                         // potentialOwner is better than current owner so kill current
                         Message poison = new Message(new Timestamp(potentialOwner), procId);
-                        System.out.println("Proc" + procId + " Sending Poison to proc" + owner.getId() + " for proc" + potentialOwner.getId());
+                        System.out.println("Proc" + procId + " Sending Poison to proc" + owner.getPId() + " for proc" + potentialOwner.getPId());
                         captureMessages++;
-                        sendTo(poison, owner.getId());
+                        sendTo(poison, owner.getPId().getId());
 
                         // and submit to potentialOwner
                         owner = potentialOwner;
-                        System.out.println("Proc" + procId + " Sending capture acknowledge to " + owner.getId());
+                        System.out.println("Proc" + procId + " Sending capture acknowledge to " + owner.getPId());
                         ackMessages++;
                         Message capture = new Message(new Timestamp(owner), procId);
-                        sendTo(capture, owner.getId());
+                        sendTo(capture, owner.getPId().getId());
                     }
                 }
             }

@@ -1,13 +1,14 @@
 #!/bin/bash
 numOfProcessToCreate=$1
-bindingLoc=${2:-"localhost"}
-isServer=${3:-"0"}
-minNumProcs=${4:-"0"}
+RMIBinding=${2:-"localhost"}
+infoBinding=${3:-"localhost"}
+runInfo=${4:-""}
+minNumProcs=${5:-""}
 
-if [ "$isServer" != "0" ];then
-    echo "Starting Server"
+if [ "$runInfo" = "Y" ];then
+    echo "Starting Info"
     javac ServerMain.java
-    java ServerMain $minNumProcs &
+    java ServerMain $minNumProcs $runInfo &
     echo "Server Started"
 # wait one second for server to start before launching all processes
     sleep 1s
@@ -17,10 +18,10 @@ echo "Now Compiling Program"
 javac Main.java
 echo "Progarm compiled Now Starting Execution"
 
-echo "Starting Script for " $numOfProcces" Processes"
+echo "Starting Script for " $numOfProccesToCreate" Processes"
 for ((i=0;i<numOfProcessToCreate;i++));
 do
-	java Main $bindingLoc &
+	java Main $RMIBinding $infoBinding &
 done
 read -p "Press Any Key to Exit"
 kill $(ps aux | grep '[j]ava Main' | awk '{print $2}')

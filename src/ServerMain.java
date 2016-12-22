@@ -11,12 +11,16 @@ public class ServerMain
 
     public static void main(String args[]) throws RemoteException
     {
-        if(args.length==0)
+        int minExpectedNumProcs = -1;
+        boolean runInfo = false;
+
+        if(args.length >= 2)
         {
-            System.out.println("Improper Arguments Please specify minimum number of expected processes.");
-            return;
+            minExpectedNumProcs= Integer.parseInt(args[0]);
+            String runInfoStr = args[1];
+            runInfo = runInfoStr.equalsIgnoreCase("y");
         }
-        int minExpectedNumProcs= Integer.parseInt(args[0]);
+
 
         try
         {
@@ -39,19 +43,21 @@ public class ServerMain
         {
             System.out.println("Already Running Binding");
         }
-        AGEInfo infoObject= new AGEInfo(minExpectedNumProcs);
 
-        //Bind your information object on the Server
-        try
+
+        if(runInfo)
         {
-            Naming.rebind("rmi://localhost:1099/info", infoObject);
-        }
-        catch(Exception ex)
-        {
-            ex.printStackTrace();
-        }
+            AGEInfo infoObject= new AGEInfo(minExpectedNumProcs);
+            //Bind your information object on the Server
+            try
+            {
+                Naming.rebind("rmi://localhost:1099/info", infoObject);
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
 
-        System.out.println("\nInfo Object binded to Server");
-
+            System.out.println("\nInfo Object binded to Server");
+        }
     }
 }
