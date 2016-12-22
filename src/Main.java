@@ -19,8 +19,8 @@ public class Main {
         }
         String bindingLocation;
 
-        if (System.getSecurityManager() == null) {
-            System.setSecurityManager(new RMISecurityManager()); }
+//        if (System.getSecurityManager() == null) {
+//            System.setSecurityManager(new RMISecurityManager()); }
 
         //  int thisProcID= Integer.parseInt(args[0]);
 //        boolean ifServer= Boolean.parseBoolean(args[1]);
