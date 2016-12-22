@@ -45,7 +45,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         this.killed = false;
         this.elected = false;
         this.canidate = false;
-        this.traversal = createTraversal(); // todo number of procs in run rather than constructor?
+        this.traversal = null;
         this.owner = null;
         this.bindingLoc = bindingLoc;
     }
@@ -66,9 +66,10 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
 
     public void  run(int numProcs) // todo number of procs in run rather than constructor or as method call?
     {
-        // TODO change this?
-        canidate = Math.random() < 0.2;
+        this.numProcs = numProcs;
+        traversal = createTraversal();
 
+        canidate = Math.random() < 0.2;
 
         while(canidate && hasUntraversed())
         {
