@@ -66,13 +66,16 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
 
     public void  run(int numProcs) // todo number of procs in run rather than constructor or as method call?
     {
+        System.out.println("Proc" + procId + " STARTING ALGORITHM");
+
         this.numProcs = numProcs;
         traversal = createTraversal();
 
         canidate = Math.random() < 0.2;
-        System.out.println("Proc" + procId + " canidate? " + canidate);
+        if(canidate)
+            System.out.println("Proc" + procId + " is a CANIDATE");
 
-        while(canidate && hasUntraversed())
+        while(canidate && !killed && hasUntraversed())
         {
             waitTime(getRandTime());
             int link = getUntraversed();
@@ -178,6 +181,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
                 killed = true;
                 canidate = false;
                 Message concede = new Message(new Timestamp(message.getTimestamp()), procId);
+                System.out.println("Proc" + procId + " Sending concede to " + message.getSenderID());
                 sendTo(concede, message.getSenderID());
             }
         }
@@ -186,7 +190,8 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
             if (owner == null)
             {
                 owner = new Timestamp(message.getTimestamp());
-                sendTo(new Message(owner, procId), owner.getId());
+                System.out.println("Proc" + procId + " Sending capture confirm to " + owner.getId());
+                sendTo(new Message(new Timestamp(owner), procId), owner.getId());
             }
             else
             {
@@ -194,9 +199,11 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
                 if(potentialOwner.compareTo(owner) > 0)
                 {
                     Message poison = new Message(new Timestamp(message.getTimestamp()), procId);
+                    System.out.println("Proc" + procId + " Sending Poison to " + owner.getId());
                     sendTo(poison, owner.getId());
 
                     owner = potentialOwner;
+                    System.out.println("Proc" + procId + " Sending capture acknowledge to " + owner.getId());
                     sendTo(new Message(new Timestamp(message.getTimestamp()), procId), owner.getId());
                 }
             }

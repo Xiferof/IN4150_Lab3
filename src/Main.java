@@ -56,11 +56,11 @@ public class Main {
             AGEInfoInterface infoStub = (AGEInfoInterface) Naming.lookup(bindingLocation+"info");
             while(!infoStub.canStart())
             {
-                waitTime(getRandTime());
+                waitTime(10);
                 //Wait Until we can all start
             }
             int numberOfProcs= infoStub.getNumberOfProcs();
-            p.run( numberOfProcs);
+            p.run(numberOfProcs);
         }
         catch (Exception ex)
         {

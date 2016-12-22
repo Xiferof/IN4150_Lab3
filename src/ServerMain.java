@@ -38,7 +38,7 @@ public class ServerMain
             ex.printStackTrace();
         }
 
-        System.out.println("Info Object binded to Server");
+        System.out.println("\nInfo Object binded to Server");
 
     }
 }
