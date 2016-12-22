@@ -28,7 +28,6 @@ public class ServerMain
             runInfo = runInfoStr.equalsIgnoreCase("y");
         }
 
-
         try
         {
             System.setProperty("java.security.policy","file:./server.policy");
@@ -54,6 +53,7 @@ public class ServerMain
 
         if(runInfo)
         {
+            System.out.println("Preparing to run info");
             AGEInfo infoObject= new AGEInfo(minExpectedNumProcs);
             //Bind your information object on the Server
             try

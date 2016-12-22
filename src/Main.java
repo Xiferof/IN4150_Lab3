@@ -51,7 +51,8 @@ public class Main {
 //            thisProcID = infoStub.requestProcId();
 //            System.out.println("Got proc id for " + thisProcID);
 //            System.out.println(thisProcID + "TESTING");
-            thisProcID = ((AGEInfoInterface)(Naming.lookup(infoBindingLoc))).requestProcId(bindingLocation);
+            AGEInfoInterface info = ((AGEInfoInterface)(Naming.lookup(infoBindingLoc)));
+            thisProcID = info.requestProcId(bindingLocation);
             System.out.println("Got proc id for " + thisProcID);
         }
         catch (Exception ex)
