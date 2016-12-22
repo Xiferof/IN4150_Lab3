@@ -38,7 +38,7 @@ public class Main {
 //            System.out.println("lookup success");
 //            thisProcID = infoStub.requestProcId();
 //            System.out.println("Got proc id for " + thisProcID);
-            System.out.println(thisProcID + "TESTING");
+//            System.out.println(thisProcID + "TESTING");
             thisProcID = ((AGEInfoInterface)(Naming.lookup(bindingLocation+"info"))).requestProcId();
             System.out.println("Got proc id for " + thisProcID);
         }

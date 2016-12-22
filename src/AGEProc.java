@@ -24,6 +24,10 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
     // the RMI binding location
     private String bindingLoc;
 
+    // for data collection
+    private int captureMessages;
+    private int ackMessages;
+
     public AGEProc()throws RemoteException
     {
         this.procId = -1;
@@ -48,6 +52,10 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         this.traversal = null;
         this.owner = null;
         this.bindingLoc = bindingLoc;
+
+        // todo
+        captureMessages = 0;
+        ackMessages = 0;
     }
 
     public AGEProc(int procId, int numProcs, String bindingLoc)throws RemoteException
@@ -71,7 +79,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         this.numProcs = numProcs;
         traversal = initTraversal();
 
-        candidate = Math.random() < 0.2;
+        candidate = Math.random() < 0.5;
         if(candidate)
             System.out.println("Proc" + procId + " is a CANIDATE");
 
@@ -89,6 +97,10 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
                                "Proc" + procId + " has been elected!\n" +
                                "========================================");
         }
+
+        
+        waitTime(10000);
+        System.out.println("Results Proc" + procId + ": level: " + level + ", CaptureMessages: " + captureMessages + ", ackMessages: " + ackMessages);
     }
 
     // waits amount of time
@@ -152,6 +164,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
     {
         Message req = new Message(level, procId);
         System.out.println("Proc" + procId + " sending request to " + id + " with level " + level);
+        captureMessages++;
         sendTo(req, id);
     }
 
@@ -177,7 +190,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
     // receives a message and handles it depending on the situation and message details.
     public void receiveMessage(Message message)
     {
-        System.out.println("Proc" + procId + " received message from " + message.getSenderID());
+//        System.out.println("Proc" + procId + " received message from " + message.getSenderID());
         if(candidate)
         {
             // Process concedes to this
@@ -194,6 +207,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
                 candidate = false;
                 Message concede = new Message(new Timestamp(message.getTimestamp()), procId);
                 System.out.println("Proc" + procId + " Sending concede to " + message.getTimestamp().getId());
+                ackMessages++;
                 sendTo(concede, message.getTimestamp().getId());
             }
         }
@@ -207,6 +221,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
                 {
                     owner = new Timestamp(message.getTimestamp());
                     System.out.println("Proc" + procId + " Sending capture confirm to " + owner.getId());
+                    ackMessages++;
                     Message capture = new Message(new Timestamp(owner), this.procId);
                     sendTo(capture, owner.getId());
                 }
@@ -218,11 +233,13 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
                         // potentialOwner is better than current owner so kill current
                         Message poison = new Message(new Timestamp(potentialOwner), procId);
                         System.out.println("Proc" + procId + " Sending Poison to proc" + owner.getId() + " for proc" + potentialOwner.getId());
+                        captureMessages++;
                         sendTo(poison, owner.getId());
 
                         // and submit to potentialOwner
                         owner = potentialOwner;
                         System.out.println("Proc" + procId + " Sending capture acknowledge to " + owner.getId());
+                        ackMessages++;
                         Message capture = new Message(new Timestamp(owner), procId);
                         sendTo(capture, owner.getId());
                     }
