@@ -41,7 +41,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
     {
         this.procId = procID;
         this.level = 0;
-        this.numProcs = getTotalNumProcs();
+        this.numProcs = -1;
         this.killed = false;
         this.elected = false;
         this.canidate = false;
@@ -64,13 +64,15 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
     }
 
 
-    public void  run(int numProcs) // todo number of procs in run rather than constructor?
+    public void  run(int numProcs) // todo number of procs in run rather than constructor or as method call?
     {
         // TODO change this?
         canidate = Math.random() < 0.2;
 
+
         while(canidate && hasUntraversed())
         {
+            waitTime(getRandTime());
             int link = getUntraversed();
             sendRequestTo(link);
         }
@@ -80,10 +82,21 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         }
     }
 
-    private int getTotalNumProcs()
+    public void waitTime(int time)
     {
-        // TODO is needed?
-        return -1;
+        try
+        {
+            Thread.sleep(time);
+        }
+        catch(InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public int getRandTime()
+    {
+        return ((int)(Math.random() * 1000));
     }
 
     // initializes the traversal links to false except for its link to self

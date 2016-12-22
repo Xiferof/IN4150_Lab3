@@ -10,7 +10,7 @@ public class AGEInfo extends UnicastRemoteObject implements AGEInfoInterface
 
     public AGEInfo()throws RemoteException
     {
-
+        numberOfProcces = 0;
     }
 
     public int requestProcId()
