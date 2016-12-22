@@ -17,8 +17,8 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
     private boolean killed;
     // has this process been elected
     private boolean elected;
-    // is this process a canidate
-    private boolean canidate;
+    // is this process a candidate
+    private boolean candidate;
     // this processes owner
     private Timestamp owner;
     // the RMI binding location
@@ -31,7 +31,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         this.numProcs = -1;
         this.killed = false;
         this.elected = false;
-        this.canidate = false;
+        this.candidate = false;
         this.traversal = null;
         this.owner = null;
         this.bindingLoc = "";
@@ -44,7 +44,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         this.numProcs = -1;
         this.killed = false;
         this.elected = false;
-        this.canidate = false;
+        this.candidate = false;
         this.traversal = null;
         this.owner = null;
         this.bindingLoc = bindingLoc;
@@ -57,7 +57,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         this.numProcs = numProcs;
         this.killed = false;
         this.elected = false;
-        this.canidate = false;
+        this.candidate = false;
         this.traversal = createTraversal();
         this.owner = null;
         this.bindingLoc = bindingLoc;
@@ -71,17 +71,17 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         this.numProcs = numProcs;
         traversal = createTraversal();
 
-        canidate = Math.random() < 0.2;
-        if(canidate)
+        candidate = Math.random() < 0.2;
+        if(candidate)
             System.out.println("Proc" + procId + " is a CANIDATE");
 
-        while(canidate && !killed && hasUntraversed())
+        while(candidate && !killed && hasUntraversed())
         {
             waitTime(getRandTime());
             int link = getUntraversed();
             sendRequestTo(link);
         }
-        if(!killed && canidate && !hasUntraversed())
+        if(!killed && candidate && !hasUntraversed())
         {
             elected = true;
             System.out.println("========================================\n" +
@@ -169,42 +169,47 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
     public void receiveMessage(Message message)
     {
         System.out.println("Proc" + procId + " received message from " + message.getSenderID());
-        if(canidate)
+        if(candidate)
         {
-            if((message.getTimestamp().getId() == procId) && (!killed))
+            // Process concedes to this
+            if((message.getTimestamp().getId() == this.procId) && (!this.killed))
             {
+                System.out.println("Proc" + procId + " earns proc" + message.getSenderID() + "'s vote");
                 level++;
                 traversal[message.getSenderID()] = true;
             }
+            // this is less than received message therefore concede to better candidate
             else if(new Timestamp(level, procId).compareTo(message.getTimestamp()) < 0)
             {
                 killed = true;
-                canidate = false;
+                candidate = false;
                 Message concede = new Message(new Timestamp(message.getTimestamp()), procId);
-                System.out.println("Proc" + procId + " Sending concede to " + message.getSenderID());
-                sendTo(concede, message.getSenderID());
+                System.out.println("Proc" + procId + " Sending concede to " + message.getTimestamp().getId());
+                sendTo(concede, message.getTimestamp().getId());
             }
         }
-        else
+        else // not candidate
         {
             if (owner == null)
             {
                 owner = new Timestamp(message.getTimestamp());
                 System.out.println("Proc" + procId + " Sending capture confirm to " + owner.getId());
-                sendTo(new Message(new Timestamp(owner), procId), owner.getId());
+                Message capture = new Message(new Timestamp(owner), this.procId);
+                sendTo(capture, owner.getId());
             }
             else
             {
                 Timestamp potentialOwner = new Timestamp(message.getTimestamp());
                 if(potentialOwner.compareTo(owner) > 0)
                 {
-                    Message poison = new Message(new Timestamp(message.getTimestamp()), procId);
-                    System.out.println("Proc" + procId + " Sending Poison to " + owner.getId());
+                    Message poison = new Message(new Timestamp(potentialOwner), procId);
+                    System.out.println("Proc" + procId + " Sending Poison to proc" + owner.getId() + " for proc" + potentialOwner.getId());
                     sendTo(poison, owner.getId());
 
                     owner = potentialOwner;
                     System.out.println("Proc" + procId + " Sending capture acknowledge to " + owner.getId());
-                    sendTo(new Message(new Timestamp(message.getTimestamp()), procId), owner.getId());
+                    Message capture = new Message(new Timestamp(owner), procId);
+                    sendTo(capture, owner.getId());
                 }
             }
         }
