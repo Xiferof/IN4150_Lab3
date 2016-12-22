@@ -19,8 +19,17 @@ public class Main {
         }
         String bindingLocation;
 
-//        if (System.getSecurityManager() == null) {
-//            System.setSecurityManager(new RMISecurityManager()); }
+        try
+        {
+            System.setProperty("java.security.policy","file:./client.policy");
+            if (System.getSecurityManager() == null)
+            {
+                System.setSecurityManager(new RMISecurityManager());
+            }
+        } catch (Exception ex)
+        {
+            System.out.println(ex);
+        }
 
         //  int thisProcID= Integer.parseInt(args[0]);
 //        boolean ifServer= Boolean.parseBoolean(args[1]);

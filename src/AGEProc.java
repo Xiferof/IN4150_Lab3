@@ -5,6 +5,8 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
 {
+    private static final double PERCENT_CANDIDATES = 0.2;
+
     // list of links to be traversed
     private boolean[] traversal;
     // this processes ID
@@ -79,7 +81,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         this.numProcs = numProcs;
         traversal = initTraversal();
 
-        candidate = Math.random() < 0.5;
+        candidate = Math.random() < PERCENT_CANDIDATES;
         if(candidate)
             System.out.println("Proc" + procId + " is a CANIDATE");
 
@@ -98,7 +100,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
                                "========================================");
         }
 
-        
+
         waitTime(10000);
         System.out.println("Results Proc" + procId + ": level: " + level + ", CaptureMessages: " + captureMessages + ", ackMessages: " + ackMessages);
     }

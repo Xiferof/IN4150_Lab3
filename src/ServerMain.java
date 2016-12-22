@@ -18,8 +18,17 @@ public class ServerMain
         }
         int minExpectedNumProcs= Integer.parseInt(args[0]);
 
-//        if (System.getSecurityManager() == null) {
-//            System.setSecurityManager(new RMISecurityManager()); }
+        try
+        {
+            System.setProperty("java.security.policy","file:./server.policy");
+            if (System.getSecurityManager() == null)
+            {
+                System.setSecurityManager(new RMISecurityManager());
+            }
+        } catch (Exception ex)
+        {
+            System.out.println(ex);
+        }
 
         //Create RMI registry only if Server
         try
