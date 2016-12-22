@@ -11,6 +11,7 @@
 .idea/vcs.xml
 .idea/jsLibraryMappings.xml
 IN4150_Lab3.iml
+*.class
 
 # Sensitive or high-churn files:
 .idea/dataSources.ids
