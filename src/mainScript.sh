@@ -1,13 +1,13 @@
 #!/bin/bash
 numOfProcessToCreate=$1
-bindingLoc=$(2:-"localhost")
-isServer=$(3:-0)
-minNumProcs=$(4:-0)
+bindingLoc=${2:-"localhost"}
+isServer=${3:-"0"}
+minNumProcs=${4:-"0"}
 
-if [isServer != 0];then
+if [ "$isServer" != "0" ];then
     echo "Starting Server"
     javac ServerMain.java
-    java ServerMain minNumProcs &
+    java ServerMain $minNumProcs &
     echo "Server Started"
     bindingLoc="localhost"
 fi
@@ -19,7 +19,7 @@ echo "Progarm compiled Now Starting Execution"
 echo "Starting Script for " $numOfProcces" Processes"
 for ((i=0;i<numOfProcessToCreate;i++));
 do
-	java Main bindingLoc &
+	java Main $bindingLoc &
 done
 read -p "Press Any Key to Exit"
 kill $(ps aux | grep '[j]ava Main' | awk '{print $2}')
