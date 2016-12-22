@@ -58,6 +58,7 @@ public class ServerMain
             //Bind your information object on the Server
             try
             {
+                System.setProperty("java.rmi.server.hostname", infoIp);
                 Naming.rebind("rmi://" + infoIp + ":1099/info", infoObject);
             } catch (Exception ex)
             {

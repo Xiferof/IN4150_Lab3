@@ -35,10 +35,10 @@ public class Main {
         //  int thisProcID= Integer.parseInt(args[0]);
 //        boolean ifServer= Boolean.parseBoolean(args[1]);
 
-        String rmiHostLocation = args[0];
+        String rmiBindingIP = args[0];
         String infoBindingIP = args[1];
 
-        bindingLocation = "rmi://" + rmiHostLocation + ":1099/";
+        bindingLocation = "rmi://" + rmiBindingIP + ":1099/";
         infoBindingLoc = "rmi://" + infoBindingIP + ":1099/info";
 
         ProcId thisProcID = null;
@@ -69,6 +69,7 @@ public class Main {
         AGEProc p= new AGEProc(thisProcID, infoBindingLoc);
         try
         {
+            System.setProperty("java.rmi.server.hostname", rmiBindingIP);
             Naming.rebind(bindingLocation+thisProcID.getId(), p);
         }
         catch(Exception ex)
