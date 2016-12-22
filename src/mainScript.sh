@@ -5,14 +5,12 @@ infoBinding=${3:-"localhost"}
 runInfo=${4:-""}
 minNumProcs=${5:-""}
 
-if [ "$runInfo" = "Y" ];then
-    echo "Starting Info"
-    javac ServerMain.java
-    java ServerMain $infoBinding $minNumProcs $runInfo &
-    echo "Server Started"
+echo "Starting Server"
+javac ServerMain.java
+java ServerMain $infoBinding $minNumProcs $runInfo &
+echo "Server Started"
 # wait one second for server to start before launching all processes
-    sleep 1s
-fi
+sleep 1s
 
 echo "Now Compiling Program"
 javac Main.java
