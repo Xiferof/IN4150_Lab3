@@ -9,7 +9,8 @@ if [ "$isServer" != "0" ];then
     javac ServerMain.java
     java ServerMain $minNumProcs &
     echo "Server Started"
-    bindingLoc="localhost"
+# wait one second for server to start before launching all processes
+    sleep 1s
 fi
 
 echo "Now Compiling Program"

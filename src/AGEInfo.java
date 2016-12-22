@@ -15,7 +15,7 @@ public class AGEInfo extends UnicastRemoteObject implements AGEInfoInterface
         this.minExpectedNumProcs = minExpectedNumProcs;
     }
 
-    public int requestProcId()
+    public synchronized int requestProcId()
     {
         return numProcs++;
     }

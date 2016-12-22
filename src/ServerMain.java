@@ -1,4 +1,5 @@
 import java.rmi.Naming;
+import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
@@ -16,6 +17,9 @@ public class ServerMain
             return;
         }
         int minExpectedNumProcs= Integer.parseInt(args[0]);
+
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new RMISecurityManager()); }
 
         //Create RMI registry only if Server
         try

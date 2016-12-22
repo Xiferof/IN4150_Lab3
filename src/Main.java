@@ -1,4 +1,5 @@
 import java.rmi.Naming;
+import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.RemoteObjectInvocationHandler;
@@ -17,7 +18,11 @@ public class Main {
             return;
         }
         String bindingLocation;
-      //  int thisProcID= Integer.parseInt(args[0]);
+
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new RMISecurityManager()); }
+
+        //  int thisProcID= Integer.parseInt(args[0]);
 //        boolean ifServer= Boolean.parseBoolean(args[1]);
 
         String rmiHostLocation = args[0];
@@ -28,8 +33,14 @@ public class Main {
 
         try
         {
-            AGEInfoInterface infoStub = (AGEInfoInterface) Naming.lookup(bindingLocation+"info");
-            thisProcID = infoStub.requestProcId();
+//            System.out.println(thisProcID + "TESTING");
+//            AGEInfoInterface infoStub = ((AGEInfoInterface)( Naming.lookup(bindingLocation+"info")));
+//            System.out.println("lookup success");
+//            thisProcID = infoStub.requestProcId();
+//            System.out.println("Got proc id for " + thisProcID);
+            System.out.println(thisProcID + "TESTING");
+            thisProcID = ((AGEInfoInterface)(Naming.lookup(bindingLocation+"info"))).requestProcId();
+            System.out.println("Got proc id for " + thisProcID);
         }
         catch (Exception ex)
         {
