@@ -78,7 +78,7 @@ public class Main {
         }
         try
         {
-            AGEInfoInterface infoStub = (AGEInfoInterface) Naming.lookup(bindingLocation+"info");
+            AGEInfoInterface infoStub = (AGEInfoInterface) Naming.lookup(infoBindingLoc);
             while(!infoStub.canStart())
             {
                 waitTime(10);
