@@ -14,10 +14,17 @@ public class ServerMain
         int minExpectedNumProcs = -1;
         boolean runInfo = false;
 
-        if(args.length >= 2)
+        if(args.length < 1)
         {
-            minExpectedNumProcs= Integer.parseInt(args[0]);
-            String runInfoStr = args[1];
+            System.out.println("Needs info ip as argument");
+            return;
+        }
+        String infoIp = args[0];
+
+        if(args.length >= 3)
+        {
+            minExpectedNumProcs= Integer.parseInt(args[1]);
+            String runInfoStr = args[2];
             runInfo = runInfoStr.equalsIgnoreCase("y");
         }
 
@@ -51,7 +58,7 @@ public class ServerMain
             //Bind your information object on the Server
             try
             {
-                Naming.rebind("rmi://localhost:1099/info", infoObject);
+                Naming.rebind("rmi://" + infoIp + ":1099/info", infoObject);
             } catch (Exception ex)
             {
                 ex.printStackTrace();

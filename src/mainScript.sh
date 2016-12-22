@@ -8,7 +8,7 @@ minNumProcs=${5:-""}
 if [ "$runInfo" = "Y" ];then
     echo "Starting Info"
     javac ServerMain.java
-    java ServerMain $minNumProcs $runInfo &
+    java ServerMain $infobinding $minNumProcs $runInfo &
     echo "Server Started"
 # wait one second for server to start before launching all processes
     sleep 1s
@@ -18,7 +18,7 @@ echo "Now Compiling Program"
 javac Main.java
 echo "Progarm compiled Now Starting Execution"
 
-echo "Starting Script for " $numOfProccesToCreate" Processes"
+echo "Starting Script for " $numOfProcessToCreate" Processes"
 for ((i=0;i<numOfProcessToCreate;i++));
 do
 	java Main $RMIBinding $infoBinding &
