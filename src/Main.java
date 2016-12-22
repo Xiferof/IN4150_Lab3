@@ -54,9 +54,10 @@ public class Main {
         try
         {
             AGEInfoInterface infoStub = (AGEInfoInterface) Naming.lookup(bindingLocation+"info");
-            while(infoStub.canStart())
+            while(!infoStub.canStart())
             {
-            //Wait Until we can all start
+                waitTime(getRandTime());
+                //Wait Until we can all start
             }
             int numberOfProcs= infoStub.getNumberOfProcs();
             p.run( numberOfProcs);
@@ -68,6 +69,22 @@ public class Main {
 
     }
 
+    public static void waitTime(int time)
+    {
+        try
+        {
+            Thread.sleep(time);
+        }
+        catch(InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static int getRandTime()
+    {
+        return ((int)(Math.random() * 1000));
+    }
 
 }
 

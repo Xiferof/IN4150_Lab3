@@ -70,6 +70,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         traversal = createTraversal();
 
         canidate = Math.random() < 0.2;
+        System.out.println("Proc" + procId + " canidate? " + canidate);
 
         while(canidate && hasUntraversed())
         {
@@ -80,6 +81,9 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         if(!killed && canidate && !hasUntraversed())
         {
             elected = true;
+            System.out.println("========================================\n" +
+                               "Proc" + procId + " has been elected!\n" +
+                               "========================================");
         }
     }
 
@@ -141,6 +145,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
     private void sendRequestTo(int id)
     {
         Message req = new Message(level, procId);
+        System.out.println("Proc" + procId + " sending request to " + id + " with level " + level);
         sendTo(req, id);
     }
 
@@ -160,6 +165,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
     // receives a message and handles it depending on the situation and message details.
     public void receiveMessage(Message message)
     {
+        System.out.println("Proc" + procId + " received message from " + message.getSenderID());
         if(canidate)
         {
             if((message.getTimestamp().getId() == procId) && (!killed))

@@ -22,7 +22,12 @@ public class AGEInfo extends UnicastRemoteObject implements AGEInfoInterface
 
     public boolean canStart()
     {
-        return (numProcs >= minExpectedNumProcs);
+        if(numProcs >= minExpectedNumProcs)
+        {
+            System.out.println("Starting Algorithm");
+            return true;
+        }
+        return false;
     }
     public int getNumberOfProcs()
     {
