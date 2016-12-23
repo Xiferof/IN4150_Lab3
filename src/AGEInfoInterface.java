@@ -9,5 +9,7 @@ public interface AGEInfoInterface extends Remote
     public ProcId requestProcId(String binding)throws RemoteException;
     public boolean canStart() throws RemoteException;
     public int getNumberOfProcs() throws RemoteException;
-    public  ProcId getBindingOf(int id) throws RemoteException;
+    public ProcId getBindingOf(int id) throws RemoteException;
+    public void logResults(int numCapReqs, int numAcks, int lvl, int numCapt) throws RemoteException;
+    public String report() throws RemoteException;
 }

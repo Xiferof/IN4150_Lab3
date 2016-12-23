@@ -5,7 +5,7 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
 {
-    private static final double PERCENT_CANDIDATES = 0.2;
+    private static final double PERCENT_CANDIDATES = 1;
 
     // list of links to be traversed
     private boolean[] traversal;
@@ -83,7 +83,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
 
         candidate = Math.random() < PERCENT_CANDIDATES;
         if(candidate)
-            System.out.println("Proc" + procId + " is a CANIDATE");
+            System.out.println("Proc" + procId.getId() + " is a CANIDATE");
 
         waitTime(getRandTime());
         while(candidate && !killed && hasUntraversed())
@@ -101,8 +101,17 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
         }
 
 
-        waitTime(10000);
+        waitTime(10000 + getRandTime());
         System.out.println("Results Proc" + procId.getId() + ": level: " + level + ", CaptureMessages: " + captureMessages + ", ackMessages: " + ackMessages);
+        try
+        {
+            AGEInfoInterface infoStub = (AGEInfoInterface) Naming.lookup(infoBinding);
+            infoStub.logResults(captureMessages, ackMessages, level, ackMessages);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     // waits amount of time
@@ -165,7 +174,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
     private void sendRequestTo(int id)
     {
         Message req = new Message(level, procId);
-        System.out.println("Proc" + procId + " sending request to " + id + " with level " + level);
+        System.out.println("Proc" + procId.getId() + " sending request to " + id + " with level " + level);
         captureMessages++;
         sendTo(req, id);
     }
@@ -200,7 +209,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
             // Process concedes to this
             if((message.getTimestamp().getPId().getId() == this.procId.getId()) && (!this.killed))
             {
-                System.out.println("Proc" + procId + " earns proc" + message.getSenderID() + "'s vote");
+                System.out.println("Proc" + procId.getId() + " earns proc" + message.getSenderID().getId() + "'s vote");
                 level++;
                 traversal[message.getSenderID().getId()] = true;
             }
@@ -210,9 +219,13 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
                 killed = true;
                 candidate = false;
                 Message concede = new Message(new Timestamp(message.getTimestamp()), procId);
-                System.out.println("Proc" + procId + " Sending concede to " + message.getTimestamp().getPId());
+                System.out.println("Proc" + procId.getId() + " Sending concede to " + message.getTimestamp().getPId().getId());
                 ackMessages++;
                 sendTo(concede, message.getTimestamp().getPId().getId());
+            }
+            else
+            {
+                System.out.println("Proc" + procId.getId() + " Ignoring request from proc" + procId.getId());
             }
         }
         else // not candidate
@@ -224,7 +237,7 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
                 if (owner == null)
                 {
                     owner = new Timestamp(message.getTimestamp());
-                    System.out.println("Proc" + procId + " Sending capture confirm to " + owner.getPId());
+                    System.out.println("Proc" + procId.getId() + " Sending capture confirm to " + owner.getPId().getId());
                     ackMessages++;
                     Message capture = new Message(new Timestamp(owner), this.procId);
                     sendTo(capture, owner.getPId().getId());
@@ -236,13 +249,13 @@ public class AGEProc extends UnicastRemoteObject implements AGEProcInterface
                     {
                         // potentialOwner is better than current owner so kill current
                         Message poison = new Message(new Timestamp(potentialOwner), procId);
-                        System.out.println("Proc" + procId + " Sending Poison to proc" + owner.getPId() + " for proc" + potentialOwner.getPId());
+                        System.out.println("Proc" + procId.getId() + " Sending Poison to proc" + owner.getPId().getId() + " for proc" + potentialOwner.getPId().getId());
                         captureMessages++;
                         sendTo(poison, owner.getPId().getId());
 
                         // and submit to potentialOwner
                         owner = potentialOwner;
-                        System.out.println("Proc" + procId + " Sending capture acknowledge to " + owner.getPId());
+                        System.out.println("Proc" + procId.getId() + " Sending capture acknowledge to " + owner.getPId().getId());
                         ackMessages++;
                         Message capture = new Message(new Timestamp(owner), procId);
                         sendTo(capture, owner.getPId().getId());
